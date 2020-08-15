@@ -23,7 +23,6 @@ import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.CrimeRepository;
 import com.example.criminalintent.repository.IRepository;
 
 import java.util.List;
@@ -35,6 +34,7 @@ public class CrimeListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private IRepository<Crime> mRepository;
     private CrimeAdapter mAdapter;
+    private String mCurrentUser;
 
     private boolean mIsSubtitleVisible = false;
 
@@ -42,10 +42,10 @@ public class CrimeListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static CrimeListFragment newInstance() {
+    public static CrimeListFragment newInstance(String userName) {
 
         Bundle args = new Bundle();
-
+        args.putString("UserName", userName);
         CrimeListFragment fragment = new CrimeListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -54,7 +54,8 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /*if (getArguments() != null)*/
+        mCurrentUser = getArguments().getString("UserName");
         setHasOptionsMenu(true);
         mRepository = CrimeDBRepository.getInstance(getActivity());
 
@@ -150,14 +151,12 @@ public class CrimeListFragment extends Fragment {
 
     private void updateSubtitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        int numberOfCrimes = mRepository.getList().size();
-        String crimesString = getString(R.string.subtitle_format, numberOfCrimes);
-
+       /*int numberOfCrimes = mRepository.getList().size();
+        String crimesString = getString(R.string.subtitle_format, numberOfCrimes);*/
         if (!mIsSubtitleVisible)
-            crimesString = null;
-
-        activity.getSupportActionBar().setSubtitle(crimesString);
+            activity.getSupportActionBar().setSubtitle(null);
+        else
+            activity.getSupportActionBar().setSubtitle(mCurrentUser);
     }
 
     //view holder responsibility: hold reference to row views.
